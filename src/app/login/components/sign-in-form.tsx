@@ -79,6 +79,12 @@ export const SignInForm = () => {
     });
   }
 
+  const handleSignInWithGoogle = async () => {
+    await authClient.signIn.social({
+      provider: "google",
+    });
+  };
+
   return (
     <>
       <Card className="w-full">
@@ -128,7 +134,7 @@ export const SignInForm = () => {
               <Button
                 variant="outline"
                 className="w-full"
-                //onClick={handleSignInWithGoogle}
+                onClick={handleSignInWithGoogle}
                 type="button"
               >
                 <svg viewBox="0 0 24 24" className="h-4 w-4">
