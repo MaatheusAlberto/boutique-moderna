@@ -72,7 +72,11 @@ export function ProductList({ title, products }: ProductListProps) {
         onMouseMove={handleMouseMove}
       >
         {products.map((product) => (
-          <ProductItem key={product.id} product={product} />
+          <ProductItem
+            key={product.id}
+            product={product}
+            textContainerClassName="max-w-full "
+          />
         ))}
       </div>
     </div>

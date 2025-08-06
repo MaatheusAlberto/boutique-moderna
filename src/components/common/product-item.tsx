@@ -3,38 +3,37 @@ import Link from "next/link";
 
 import { productTable, productVariantTable } from "@/db/schema";
 import { formatCentsToBRL } from "@/helpers/money";
+import { cn } from "@/lib/utils";
 
 interface ProductItemProps {
   product: typeof productTable.$inferSelect & {
     variants: (typeof productVariantTable.$inferSelect)[];
   };
+  textContainerClassName?: string;
 }
 
-const ProductItem = ({ product }: ProductItemProps) => {
+const ProductItem = ({ product, textContainerClassName }: ProductItemProps) => {
   const firstVariant = product.variants[0];
 
-  let imageUrl = firstVariant.imageUrl;
-
-  const urlRegex = /https?:\/\/[^"]+/;
-  const match = typeof imageUrl === "string" ? imageUrl.match(urlRegex) : null;
-
-  if (!match) {
-    console.error("URL inválida:", imageUrl);
-    imageUrl = ""; // imagem de fallback
-  } else {
-    imageUrl = match[0];
-  }
-
   return (
-    <Link href="/" className="flex flex-col gap-4">
-      <Image
-        src={imageUrl}
-        alt={firstVariant.name}
-        width={200}
-        height={200}
-        className="rounded-3xl"
-      />
-      <div className="flex max-w-[200px] flex-col gap-1">
+    <Link
+      href={`/product-variant/${firstVariant.slug}`}
+      className="flex flex-col gap-4"
+    >
+      <div className="relative h-80 w-full">
+        <Image
+          src={firstVariant.imageUrl}
+          alt={firstVariant.name}
+          fill
+          className="h-auto w-full rounded-3xl object-cover"
+        />
+      </div>
+      <div
+        className={cn(
+          "flex max-w-[200px] flex-col gap-1",
+          textContainerClassName,
+        )}
+      >
         <p className="truncate text-sm font-medium">{product.name}</p>
         <p className="text-muted-foreground truncate text-xs font-medium">
           {product.description}
