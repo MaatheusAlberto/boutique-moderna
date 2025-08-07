@@ -3,6 +3,8 @@ import { MinusIcon, PlusIcon, TrashIcon } from "lucide-react";
 import Image from "next/image";
 import { toast } from "sonner";
 
+import { addProductToCart } from "@/actions/add-cart-product";
+import { decreaseCartProduct } from "@/actions/descrease-cart-product";
 import { removeProductFromCart } from "@/actions/remove-cart-product";
 import { formatCentsToBRL } from "@/helpers/money";
 
@@ -10,6 +12,7 @@ import { Button } from "../ui/button";
 
 interface CartItemProps {
   id: string;
+  productVariantId: string;
   productName: string;
   productVariantName: string;
   productVariantImageUrl: string;
@@ -19,6 +22,7 @@ interface CartItemProps {
 
 const CartItem = ({
   id,
+  productVariantId,
   productName,
   productVariantName,
   productVariantImageUrl,
@@ -35,6 +39,22 @@ const CartItem = ({
     },
   });
 
+  const decreaseCartProductMutation = useMutation({
+    mutationKey: ["decrease-cart-product"],
+    mutationFn: () => decreaseCartProduct({ cartItemId: id }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["cart"] });
+    },
+  });
+
+  const increaseCartProductMutation = useMutation({
+    mutationKey: ["increase-cart-product"],
+    mutationFn: () => addProductToCart({ productVariantId, quantity: 1 }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["cart"] });
+    },
+  });
+
   const handleDeleteProductFromCart = () => {
     removeProductFromCartMutation.mutate(undefined, {
       onSuccess: () => {
@@ -42,6 +62,28 @@ const CartItem = ({
       },
       onError: () => {
         toast.error("Erro ao remover produto do carrinho");
+      },
+    });
+  };
+
+  const handleDecreaseCartProduct = () => {
+    decreaseCartProductMutation.mutate(undefined, {
+      onSuccess: () => {
+        toast.success("Quantidade do produto diminuida");
+      },
+      onError: () => {
+        toast.error("Erro ao diminuir quantidade do produto");
+      },
+    });
+  };
+
+  const handleIncreaseCartProduct = () => {
+    increaseCartProductMutation.mutate(undefined, {
+      onSuccess: () => {
+        toast.success("Quantidade do produto aumentada");
+      },
+      onError: () => {
+        toast.error("Erro ao aumentar quantidade do produto");
       },
     });
   };
@@ -62,11 +104,19 @@ const CartItem = ({
             {productVariantName}
           </p>
           <div className="flex w-[100px] items-center justify-between rounded-lg border p-1">
-            <Button className="h-4 w-4" variant="ghost" onClick={() => {}}>
+            <Button
+              className="h-4 w-4"
+              variant="ghost"
+              onClick={handleDecreaseCartProduct}
+            >
               <MinusIcon />
             </Button>
             <p className="text-xs font-medium">{quantity}</p>
-            <Button className="h-4 w-4" variant="ghost" onClick={() => {}}>
+            <Button
+              className="h-4 w-4"
+              variant="ghost"
+              onClick={handleIncreaseCartProduct}
+            >
               <PlusIcon />
             </Button>
           </div>
