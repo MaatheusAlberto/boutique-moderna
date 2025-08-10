@@ -8,6 +8,8 @@ import { orderTable } from "@/db/schema";
 export const POST = async (request: NextRequest) => {
   //acompanhar webhook: stripe listen --forward-to localhost:3000/api/stripe/webhook
 
+  // fazer depois  se o pedido foi cancelado nao apagar o carrinho, manter e atualizar o status do pedido, somente apagar o carrinho caso finalize a compra
+
   const signature = request.headers.get("stripe-signature");
 
   if (!signature || !process.env.STRIPE_WEBHOOK_SECRET) {
