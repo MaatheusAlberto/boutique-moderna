@@ -20,29 +20,31 @@ const IdentificationPage = async () => {
     redirect("/");
   }
 
-  const cart = await db.query.cartTable.findFirst({
-    where: (cart, { eq }) => eq(cart.userId, session.user.id),
-    with: {
-      shippingAddress: true,
-      items: {
-        with: {
-          productVariant: {
-            with: {
-              product: true,
+  const [cart, shippingAddresses, categories] = await Promise.all([
+    db.query.cartTable.findFirst({
+      where: (cart, { eq }) => eq(cart.userId, session.user.id),
+      with: {
+        shippingAddress: true,
+        items: {
+          with: {
+            productVariant: {
+              with: {
+                product: true,
+              },
             },
           },
         },
       },
-    },
-  });
+    }),
+    db.query.shippingAddressTable.findMany({
+      where: eq(shippingAddressTable.userId, session.user.id),
+    }),
+    db.query.categoryTable.findMany({}),
+  ]);
 
   if (!cart || cart?.items.length === 0) {
     redirect("/");
   }
-
-  const shippingAddresses = await db.query.shippingAddressTable.findMany({
-    where: eq(shippingAddressTable.userId, session.user.id),
-  });
 
   const cartTotalInCents = cart.items.reduce(
     (acc, item) => acc + item.productVariant.priceInCents * item.quantity,
@@ -50,30 +52,41 @@ const IdentificationPage = async () => {
   );
 
   return (
-    <div>
-      <Header />
-      <div className="space-y-4 px-5">
-        <Addresses
-          shippingAddresses={shippingAddresses}
-          defaultShippingAddressId={cart.shippingAddress?.id || null}
-        />
-        <CartSummary
-          subtotalInCents={cartTotalInCents}
-          totalInCents={cartTotalInCents}
-          products={cart.items.map((item) => ({
-            id: item.productVariant.id,
-            name: item.productVariant.product.name,
-            variantName: item.productVariant.name,
-            quantity: item.quantity,
-            priceInCents: item.productVariant.priceInCents,
-            imageUrl: item.productVariant.imageUrl,
-          }))}
-        />
-      </div>
-      <div className="mt-12">
-        <Footer />
-      </div>
-    </div>
+    <>
+      <Header categories={categories} />
+      <main className="mx-auto max-w-7xl px-5 lg:px-8">
+        <div className="space-y-6 py-6 lg:space-y-8 lg:py-8">
+          <h1 className="text-xl font-semibold lg:text-2xl">
+            Finalizar Compra
+          </h1>
+
+          <div className="lg:grid lg:grid-cols-3 lg:gap-8">
+            <div className="lg:col-span-2">
+              <Addresses
+                shippingAddresses={shippingAddresses}
+                defaultShippingAddressId={cart.shippingAddress?.id || null}
+              />
+            </div>
+
+            <div className="lg:col-span-1">
+              <CartSummary
+                subtotalInCents={cartTotalInCents}
+                totalInCents={cartTotalInCents}
+                products={cart.items.map((item) => ({
+                  id: item.productVariant.id,
+                  name: item.productVariant.product.name,
+                  variantName: item.productVariant.name,
+                  quantity: item.quantity,
+                  priceInCents: item.productVariant.priceInCents,
+                  imageUrl: item.productVariant.imageUrl,
+                }))}
+              />
+            </div>
+          </div>
+        </div>
+      </main>
+      <Footer />
+    </>
   );
 };
 

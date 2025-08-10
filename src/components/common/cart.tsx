@@ -1,6 +1,6 @@
 "use client";
 
-import { ShoppingBasketIcon } from "lucide-react";
+import { ShoppingBasketIcon, ShoppingCartIcon } from "lucide-react";
 import Link from "next/link";
 
 import { Button } from "@/components/ui/button";
@@ -35,24 +35,39 @@ export const Cart = () => {
 
         <div className="flex h-full flex-col px-5 pb-5">
           <div className="flex h-full max-h-full flex-col overflow-hidden">
-            <ScrollArea className="h-full">
-              <div className="flex h-full flex-col gap-8">
-                {cart?.items.map((item) => (
-                  <CartItem
-                    key={item.id}
-                    id={item.id}
-                    productVariantId={item.productVariant.id}
-                    productName={item.productVariant.product.name}
-                    productVariantName={item.productVariant.name}
-                    productVariantImageUrl={item.productVariant.imageUrl}
-                    productVariantPriceInCents={
-                      item.productVariant.priceInCents
-                    }
-                    quantity={item.quantity}
-                  />
-                ))}
+            {cart?.items && cart?.items.length > 0 ? (
+              <ScrollArea className="h-full">
+                <div className="flex h-full flex-col gap-8">
+                  {cart?.items.map((item) => (
+                    <CartItem
+                      key={item.id}
+                      id={item.id}
+                      productVariantId={item.productVariant.id}
+                      productName={item.productVariant.product.name}
+                      productVariantName={item.productVariant.name}
+                      productVariantImageUrl={item.productVariant.imageUrl}
+                      productVariantPriceInCents={
+                        item.productVariant.priceInCents
+                      }
+                      quantity={item.quantity}
+                    />
+                  ))}
+                </div>
+              </ScrollArea>
+            ) : (
+              <div className="flex h-full flex-col items-center justify-center gap-4 text-center">
+                <ShoppingCartIcon className="text-muted-foreground h-16 w-16" />
+                <div className="space-y-2">
+                  <h3 className="text-lg font-medium">
+                    Seu carrinho está vazio
+                  </h3>
+                  <p className="text-muted-foreground text-sm">
+                    Adicione produtos incríveis ao seu carrinho e comece suas
+                    compras!
+                  </p>
+                </div>
               </div>
-            </ScrollArea>
+            )}
           </div>
 
           {cart?.items && cart?.items.length > 0 && (

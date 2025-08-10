@@ -20,14 +20,14 @@ export function ProductList({ title, products }: ProductListProps) {
   const [scrollLeft, setScrollLeft] = useState(0);
 
   const handleWheel = (event: React.WheelEvent<HTMLDivElement>) => {
-    if (containerRef.current) {
+    if (containerRef.current && window.innerWidth < 1024) {
       containerRef.current.scrollLeft += event.deltaY;
       event.preventDefault();
     }
   };
 
   const handleMouseDown = (e: React.MouseEvent<HTMLDivElement>) => {
-    if (!containerRef.current) return;
+    if (!containerRef.current || window.innerWidth >= 1024) return;
 
     setIsDragging(true);
     setStartX(e.pageX - containerRef.current.offsetLeft);
@@ -37,21 +37,22 @@ export function ProductList({ title, products }: ProductListProps) {
   };
 
   const handleMouseLeave = () => {
-    if (!containerRef.current) return;
+    if (!containerRef.current || window.innerWidth >= 1024) return;
 
     setIsDragging(false);
     containerRef.current.style.cursor = "grab";
   };
 
   const handleMouseUp = () => {
-    if (!containerRef.current) return;
+    if (!containerRef.current || window.innerWidth >= 1024) return;
 
     setIsDragging(false);
     containerRef.current.style.cursor = "grab";
   };
 
   const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
-    if (!isDragging || !containerRef.current) return;
+    if (!isDragging || !containerRef.current || window.innerWidth >= 1024)
+      return;
 
     e.preventDefault();
     const x = e.pageX - containerRef.current.offsetLeft;
@@ -61,10 +62,10 @@ export function ProductList({ title, products }: ProductListProps) {
 
   return (
     <div className="space-y-6">
-      <h3 className="px-5 font-semibold">{title}</h3>
+      <h3 className="px-5 text-lg font-semibold lg:px-8 lg:text-xl">{title}</h3>
       <div
         ref={containerRef}
-        className="flex w-full cursor-grab gap-4 overflow-x-auto px-5 [&::-webkit-scrollbar]:hidden"
+        className="lg:[&::-webkit-scrollbar]:auto flex w-full cursor-grab gap-4 overflow-x-auto px-5 lg:grid lg:cursor-default lg:grid-cols-2 lg:gap-6 lg:overflow-visible lg:px-8 xl:grid-cols-3 2xl:grid-cols-4 [&::-webkit-scrollbar]:hidden"
         onWheel={handleWheel}
         onMouseDown={handleMouseDown}
         onMouseLeave={handleMouseLeave}
@@ -75,7 +76,7 @@ export function ProductList({ title, products }: ProductListProps) {
           <ProductItem
             key={product.id}
             product={product}
-            textContainerClassName="max-w-full "
+            textContainerClassName="max-w-full lg:max-w-none"
           />
         ))}
       </div>

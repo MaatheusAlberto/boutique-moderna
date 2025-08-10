@@ -19,16 +19,19 @@ interface ProductVariantPageProps {
 const ProductVariantPage = async ({ params }: ProductVariantPageProps) => {
   const { slug } = await params;
 
-  const productVariant = await db.query.productVariantTable.findFirst({
-    where: eq(productVariantTable.slug, slug),
-    with: {
-      product: {
-        with: {
-          variants: true,
+  const [productVariant, categories] = await Promise.all([
+    db.query.productVariantTable.findFirst({
+      where: eq(productVariantTable.slug, slug),
+      with: {
+        product: {
+          with: {
+            variants: true,
+          },
         },
       },
-    },
-  });
+    }),
+    db.query.categoryTable.findMany({}),
+  ]);
 
   if (!productVariant) {
     return notFound();
@@ -43,49 +46,55 @@ const ProductVariantPage = async ({ params }: ProductVariantPageProps) => {
 
   return (
     <>
-      <Header />
-      <div className="flex flex-col space-y-6">
-        <Image
-          src={productVariant.imageUrl}
-          alt={productVariant.name}
-          sizes="100vw"
-          height={0}
-          width={0}
-          className="h-auto w-full object-cover"
-        />
+      <Header categories={categories} />
+      <main className="mx-auto max-w-7xl">
+        <div className="flex flex-col space-y-6 lg:space-y-12">
+          <div className="lg:grid lg:grid-cols-2 lg:gap-12 lg:px-8">
+            <div className="lg:order-1">
+              <Image
+                src={productVariant.imageUrl}
+                alt={productVariant.name}
+                sizes="100vw"
+                height={0}
+                width={0}
+                className="h-auto w-full object-cover lg:rounded-2xl"
+              />
+            </div>
 
-        <div className="px-5">
-          <VariantSelector
-            selectedVariantSlug={productVariant.slug}
-            variants={productVariant.product.variants}
-          />
+            <div className="space-y-6 px-5 lg:order-2 lg:flex lg:flex-col lg:justify-center lg:px-0">
+              <div>
+                <VariantSelector
+                  selectedVariantSlug={productVariant.slug}
+                  variants={productVariant.product.variants}
+                />
+              </div>
+
+              <div>
+                <h2 className="text-lg font-semibold lg:text-2xl">
+                  {productVariant.product.name}
+                </h2>
+                <h3 className="text-muted-foreground text-sm lg:text-base">
+                  {productVariant.name}
+                </h3>
+                <h3 className="text-lg font-semibold lg:text-xl">
+                  {formatCentsToBRL(productVariant.priceInCents)}
+                </h3>
+              </div>
+
+              <ProductActions productVariantId={productVariant.id} />
+
+              <div>
+                <p className="text-shadow-amber-600 lg:text-base">
+                  {productVariant.product.description}
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <ProductList title="Talvez você goste" products={likelyProducts} />
         </div>
-
-        <div className="px-5">
-          {/* DESCRIÇÃO */}
-          <h2 className="text-lg font-semibold">
-            {productVariant.product.name}
-          </h2>
-          <h3 className="text-muted-foreground text-sm">
-            {productVariant.name}
-          </h3>
-          <h3 className="text-lg font-semibold">
-            {formatCentsToBRL(productVariant.priceInCents)}
-          </h3>
-        </div>
-
-        <ProductActions productVariantId={productVariant.id} />
-
-        <div className="px-5">
-          <p className="text-shadow-amber-600">
-            {productVariant.product.description}
-          </p>
-        </div>
-
-        <ProductList title="Talvez você goste" products={likelyProducts} />
-
-        <Footer />
-      </div>
+      </main>
+      <Footer />
     </>
   );
 };

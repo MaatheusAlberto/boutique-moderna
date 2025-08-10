@@ -18,27 +18,29 @@ const ProductItem = ({ product, textContainerClassName }: ProductItemProps) => {
   return (
     <Link
       href={`/product-variant/${firstVariant.slug}`}
-      className="flex flex-col gap-4"
+      className="flex flex-col gap-4 transition-transform hover:scale-105 lg:hover:scale-102"
     >
-      <div className="relative h-80 w-full">
+      <div className="relative h-80 w-full lg:h-64 xl:h-80">
         <Image
           src={firstVariant.imageUrl}
           alt={firstVariant.name}
           fill
-          className="h-auto w-full rounded-3xl object-cover"
+          className="h-auto w-full rounded-3xl object-cover lg:rounded-2xl"
         />
       </div>
       <div
         className={cn(
-          "flex max-w-[200px] flex-col gap-1",
+          "flex max-w-[200px] flex-col gap-1 lg:max-w-none",
           textContainerClassName,
         )}
       >
-        <p className="truncate text-sm font-medium">{product.name}</p>
-        <p className="text-muted-foreground truncate text-xs font-medium">
+        <p className="truncate text-sm font-medium lg:text-base">
+          {product.name}
+        </p>
+        <p className="text-muted-foreground truncate text-xs font-medium lg:text-sm">
           {product.description}
         </p>
-        <p className="truncate text-sm font-semibold">
+        <p className="truncate text-sm font-semibold lg:text-base">
           {formatCentsToBRL(firstVariant.priceInCents)}
         </p>
       </div>

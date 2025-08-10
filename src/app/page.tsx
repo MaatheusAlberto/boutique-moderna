@@ -24,39 +24,41 @@ export default async function Home() {
 
   return (
     <>
-      <Header />
-      <div className="space-y-6">
-        <div className="px-5">
-          <Image
-            src="/banner-01.png"
-            alt="banner"
-            height={0}
-            width={0}
-            sizes="100vw"
-            className="h-auto w-full"
-          />
+      <Header categories={categories} />
+      <main className="mx-auto max-w-7xl">
+        <div className="space-y-6 lg:space-y-12">
+          <div className="px-5 lg:px-8">
+            <Image
+              src="/banner-01.png"
+              alt="banner"
+              height={0}
+              width={0}
+              sizes="100vw"
+              className="h-auto w-full rounded-lg lg:rounded-2xl"
+            />
+          </div>
+
+          <ProductList products={products} title="Produtos em destaque" />
+
+          <div className="px-5 lg:px-8">
+            <CategorySelector categories={categories} />
+          </div>
+
+          <div className="px-5 lg:px-8">
+            <Image
+              src="/banner-02.png"
+              alt="banner"
+              height={0}
+              width={0}
+              sizes="100vw"
+              className="h-auto w-full rounded-lg lg:rounded-2xl"
+            />
+          </div>
+
+          <ProductList products={newlyCreatedProducts} title="Novos produtos" />
         </div>
-
-        <ProductList products={products} title="Produtos em destaque" />
-
-        <div className="px-5">
-          <CategorySelector categories={categories} />
-        </div>
-
-        <div className="px-5">
-          <Image
-            src="/banner-02.png"
-            alt="banner"
-            height={0}
-            width={0}
-            sizes="100vw"
-            className="h-auto w-full"
-          />
-        </div>
-
-        <ProductList products={newlyCreatedProducts} title="Novos produtos" />
-        <Footer />
-      </div>
+      </main>
+      <Footer />
     </>
   );
 }
