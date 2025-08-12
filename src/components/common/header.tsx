@@ -1,6 +1,6 @@
 "use client";
 
-import { LogInIcon, LogOutIcon, MenuIcon } from "lucide-react";
+import { LogInIcon, LogOutIcon, MenuIcon, ShoppingBagIcon } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 
@@ -64,9 +64,14 @@ export const Header = ({ categories = [] }: HeaderProps) => {
                     {session?.user?.name?.split(" ")?.[1]?.[0]}
                   </AvatarFallback>
                 </Avatar>
-                <span className="text-sm font-medium">
+                {/* <span className="text-sm font-medium">
                   {session?.user?.name?.split(" ")?.[0]}
-                </span>
+                </span> */}
+                <Button asChild variant="ghost" size="sm">
+                  <Link href="/my-orders" className="text-sm">
+                    Meus Pedidos
+                  </Link>
+                </Button>
                 <Button
                   variant="ghost"
                   size="sm"
@@ -119,13 +124,20 @@ export const Header = ({ categories = [] }: HeaderProps) => {
                           </span>
                         </div>
                       </div>
-                      <Button
-                        variant="outline"
-                        size="icon"
-                        onClick={() => authClient.signOut()}
-                      >
-                        <LogOutIcon />
-                      </Button>
+                      <div className="flex gap-2">
+                        <Button asChild variant="outline" size="icon">
+                          <Link href="/my-orders">
+                            <ShoppingBagIcon />
+                          </Link>
+                        </Button>
+                        <Button
+                          variant="outline"
+                          size="icon"
+                          onClick={() => authClient.signOut()}
+                        >
+                          <LogOutIcon />
+                        </Button>
+                      </div>
                     </div>
                   </>
                 ) : (
